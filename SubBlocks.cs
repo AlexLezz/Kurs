@@ -20,17 +20,16 @@ namespace Kurs1
         double E;              //отклонение E для выделения ячеек
         DataColumn block_marks;
 
-        public SubBlocks(string img_loc, int SubBlock_count, int mark_count, string name, DataTable Prev, double E, DataColumn block_marks)
+        public SubBlocks(Image img, int SubBlock_count, int mark_count, string name, DataTable Prev, double E, DataColumn block_marks)
         {
             InitializeComponent();
-            pictureBox1.ImageLocation = img_loc;
             subBlocks_n = SubBlock_count;
             mark_n = mark_count;
             block_name = name;
             this.prev = Prev;
             this.E = E;
             this.block_marks = block_marks;
-            pictureBox1.Image = Image.FromFile(pictureBox1.ImageLocation);
+            pictureBox1.Image = img;
 
         }
 

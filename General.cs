@@ -149,7 +149,7 @@ namespace Kurs1
 
                 Data.Rows.RemoveAt(rowIndex); //удаляем строку в таблице
                 OutPutTable(Data, dataGridView1); //выводим в таблицу с удаленной строкой
-                Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5); //Проводим 1-й уровень декомпозиции при добавлении новой строки
+                Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8); //Проводим 1-й уровень декомпозиции при добавлении новой строки
                 Marks(); //обновляем график марок
 
                 if (comboBox2.Items.Count != 0)    //если блоки определены на 2 уровне
@@ -222,7 +222,7 @@ namespace Kurs1
                 TableBD();                     //Заполняем таблицу данными из таблицы базы данных
                 OutPutTable(Data, dataGridView1);   //Выводим первую таблицу
 
-                Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5); //Проводим 1-й уровень декомпозиции при подключении базы данных. С выведением в таблицы, графиком и списком
+                Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8); //Проводим 1-й уровень декомпозиции при подключении базы данных. С выведением в таблицы, графиком и списком
 
                 Marks(); //создаем график марок
 
@@ -284,7 +284,7 @@ namespace Kurs1
 
             Data.Rows.Add(NewRow); //добавляем заполненную строку в таблицу
             OutPutTable(Data, dataGridView1); //выводим в таблицу с новой строкой
-            Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5); //Проводим 1-й уровень декомпозиции при добавлении новой строки
+            Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8); //Проводим 1-й уровень декомпозиции при добавлении новой строки
             Marks(); //обновляем график марок
 
             if (comboBox2.Items.Count != 0)    //если блоки определены на 2 уровне
@@ -331,7 +331,7 @@ namespace Kurs1
 
             toolStripStatusLabel2.Text = "Точность E = " + E;
             toolStripStatusLabel3.Text = "Коэффициент эксп. сглаживания А = " + A;
-            Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5); //Проводим 1-й уровень декомпозиции
+            Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8); //Проводим 1-й уровень декомпозиции
             Stabilnost_inf(); //показываем информацию о стабильности объекта
 
             if (comboBox2.Items.Count != 0)   //если блоки определены
@@ -630,7 +630,7 @@ namespace Kurs1
         }
 
         //Полная декомпозиция по таблице. С выведением в таблицы, графиком и списком
-        private void Decommposition(DataGridView DataGrid, Chart chart, DataTable dataTable, CheckedListBox chBox1, CheckedListBox chBox2)
+        private void Decommposition(DataGridView DataGrid, Chart chart, DataTable dataTable, CheckedListBox chBox1, CheckedListBox chBox2, CheckedListBox chBox3)
         { // !!!
             DataTable dataT = TableData(dataTable); //Вычисляем таблицу значений
             OutPutTable(dataT, DataGrid); // Показываем таблицу значений
@@ -642,10 +642,6 @@ namespace Kurs1
             ChartMain(chart, dataT, 0, 7, "М-(t)");
             ChartMain(chart, dataT, 0, 3, "Прогнозное М(t)");
 
-            ChartMain(chart, dataT, 0, 2, "A(t)");
-            ChartMain(chart, dataT, 0, 6, "A(t)+");
-            ChartMain(chart, dataT, 0, 8, "A(t)-");
-
             ChartMain(chart, dataT, 1, 2, "М(a)");        //Добавляем графики
             ChartMain(chart, dataT, 5, 6, "Верхний предел М(a)+");
             ChartMain(chart, dataT, 7, 8, "Нижний предел М(a)-");
@@ -653,6 +649,9 @@ namespace Kurs1
             ChartMain(chart, dataT, 10, 12, "Прогногнозная М(a)-");
             ChartMain(chart, dataT, 3, 4, "Прогнозируемая М(a)");
 
+            ChartMain(chart, dataT, 0, 2, "A(t)");
+            ChartMain(chart, dataT, 0, 6, "A(t)+");
+            ChartMain(chart, dataT, 0, 8, "A(t)-");
             int countSerie = 0;
             //добавляем серии в список
             foreach (Series serie in chart.Series)
@@ -662,20 +661,19 @@ namespace Kurs1
                     chBox1.Items.Add(serie.Name);
                     countSerie++;
                 }
-                else if (countSerie < 7)
+                else if (countSerie < 10)
                 {
                     chBox2.Items.Add(serie.Name);
+                    countSerie++;
                 }
                 else
                 {
-
+                    chBox3.Items.Add(serie.Name);
                 }
 
             }
 
-            chBox1.SelectedIndex = 0;
-            //chBox2.SelectedIndex = 0;
-            //chBox.SelectedIndex = -1;
+            chBox1.SelectedIndex = -1;
             //Помечаем нестабильные эпохи
             for (int i = 0; i < DataGrid.Rows.Count; i++)
             {
@@ -699,7 +697,10 @@ namespace Kurs1
                     checkedListBox4,
                     checkedListBox5,
                     checkedListBox6,
-                    checkedListBox7
+                    checkedListBox7,
+                    checkedListBox8,
+                    checkedListBox9,
+                    checkedListBox10,
             };
 
             // Проходимся по всем CheckedListBox'ам, кроме текущего
@@ -753,6 +754,20 @@ namespace Kurs1
                     chart = chart4;
                     donorChart = chartPage4;
                     break;
+                case "checkedListBox8":
+                    chart = chart1;
+                    donorChart = chartPage2;
+                    break;
+                case "checkedListBox9":
+                    chart = chart2;
+                    donorChart = chartPage3;
+                    break;
+                case "checkedListBox10":
+                    chart = chart3;
+                    donorChart = chartPage5;
+                    break;
+
+                    //!!
             }
             chart.Series.Clear();
             for (int i = 0; i < checkedListBox.Items.Count; i++) //выводит на экран выбранные графики
@@ -791,7 +806,7 @@ namespace Kurs1
                 MessageBox.Show($"Неверное количество блоков. Введите значение от 2 до {(int)((Data.Columns.Count - 1) / 2)}.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            Blocks blocks = new Blocks(pictureBox1.ImageLocation, Convert.ToInt32(textBox3.Text), Data.Columns.Count - 1);
+            Blocks blocks = new Blocks(pictureBox1.Image, Convert.ToInt32(textBox3.Text), Data.Columns.Count - 1);
             //Если марки распределены по блокам
             if (blocks.ShowDialog() == DialogResult.OK)
             {
@@ -880,7 +895,7 @@ namespace Kurs1
                     else block.Rows[i][j] = Data.Rows[i][Convert.ToInt32(blocks.Rows[j - 1][comboBox2.SelectedIndex])];
                 }
             OutPutTable(block, dataGridView4); //вывод таблицы
-            Decommposition(dataGridView3, chartPage3, block, checkedListBox2, checkedListBox6); // проводим декомпозицию
+            Decommposition(dataGridView3, chartPage3, block, checkedListBox2, checkedListBox6, checkedListBox9); // проводим декомпозицию
 
             for (int i = 0; i < dataGridView3.RowCount; i++) //Проверяем есть ли нестабильные эпохи и выводим сообщение для пользователя
             {
@@ -1008,7 +1023,7 @@ namespace Kurs1
         {
             TableBD(); //заполняем таблицу данными
             OutPutTable(Data, dataGridView1);                          //выводим в таблицу
-            Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5);   //Проводим 1-й уровень декомпозиции 
+            Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8);   //Проводим 1-й уровень декомпозиции 
             Marks();                                                 //обновляем график марок
 
             comboBox2.Items.Clear(); //очищаем второй уровень декомпозиции
@@ -1019,6 +1034,7 @@ namespace Kurs1
             dataGridView4.Columns.Clear();
             chart2.Series.Clear();
             checkedListBox2.Items.Clear();
+            checkedListBox8.Items.Clear(); // !!!
 
 
             button5.Enabled = false; //Блоки еще не распределены, поэтому отключаем эти элементы
@@ -1060,7 +1076,7 @@ namespace Kurs1
             }
 
             //создание окна распределения блоков (аргументы: картинка, количество подблоков, количество марок на блоке, имя выбранного блока, таблица превышений, погрешность E, столбец с марками блока
-            SubBlocks sub_blocks = new SubBlocks(pictureBox1.ImageLocation, Convert.ToInt32(textBox4.Text), this.blocks.Rows.Count, comboBox3.SelectedItem.ToString(), Prev, E, this.blocks.Columns[comboBox3.SelectedIndex]);
+            SubBlocks sub_blocks = new SubBlocks(pictureBox1.Image, Convert.ToInt32(textBox4.Text), this.blocks.Rows.Count, comboBox3.SelectedItem.ToString(), Prev, E, this.blocks.Columns[comboBox3.SelectedIndex]);
 
             //Если марки распределены по подблокам
             if (sub_blocks.ShowDialog() == DialogResult.OK)
@@ -1109,7 +1125,7 @@ namespace Kurs1
                 }
 
             OutPutTable(subBlock, dataGridView5);
-            Decommposition(dataGridView6, chartPage4, subBlock, checkedListBox4, checkedListBox7);
+            Decommposition(dataGridView6, chartPage4, subBlock, checkedListBox4, checkedListBox7, checkedListBox10);
 
             for (int i = 0; i < dataGridView6.RowCount; i++)//Проверяем есть ли нестабильные эпохи и выводим сообщение для пользователя
             {

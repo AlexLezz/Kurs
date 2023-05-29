@@ -17,10 +17,10 @@ namespace Kurs1
         int mark_n;
         public DataTable blocks = new DataTable();
 
-        public Blocks(string img_loc, int block_count, int mark_count)
+        public Blocks(Image img, int block_count, int mark_count)
         {
             InitializeComponent();
-            pictureBox1.ImageLocation = img_loc;
+            pictureBox1.Image = img;
             blocks_n = block_count;
             mark_n = mark_count;
             // !!
