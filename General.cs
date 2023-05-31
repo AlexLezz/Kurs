@@ -608,7 +608,6 @@ namespace Kurs1
         private void ChartMain(Chart chart, DataTable dataTable, int col1, int col2, string name)
         {
             Series serie = new Series(name);
-
             for (int i = 0; i < dataTable.Rows.Count; i++)
             {
                 if (dataTable.Rows[i][col1] != DBNull.Value && dataTable.Rows[i][col2] != DBNull.Value)
@@ -968,7 +967,7 @@ namespace Kurs1
         }
 
         //Функция, создающая график высот марок по одной
-        private void Marks()
+        private void Marks() //!!
         {
             checkedListBox3.Items.Clear();  //очищаем график
             chart3.ChartAreas[0].AxisX.Title = "Эпоха";        //настройки поля графиков
