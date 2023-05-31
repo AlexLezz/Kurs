@@ -150,7 +150,7 @@ namespace Kurs1
                 Data.Rows.RemoveAt(rowIndex); //удаляем строку в таблице
                 OutPutTable(Data, dataGridView1); //выводим в таблицу с удаленной строкой
                 Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8); //Проводим 1-й уровень декомпозиции при добавлении новой строки
-                Marks(); //обновляем график марок
+                //Marks(); //обновляем график марок
 
                 if (comboBox2.Items.Count != 0)    //если блоки определены на 2 уровне
                 {
@@ -224,7 +224,7 @@ namespace Kurs1
 
                 Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8); //Проводим 1-й уровень декомпозиции при подключении базы данных. С выведением в таблицы, графиком и списком
 
-                Marks(); //создаем график марок
+                //Marks(); //создаем график марок
 
                 if (tabControl1.TabPages.Count == 1)
                 {
@@ -285,7 +285,7 @@ namespace Kurs1
             Data.Rows.Add(NewRow); //добавляем заполненную строку в таблицу
             OutPutTable(Data, dataGridView1); //выводим в таблицу с новой строкой
             Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8); //Проводим 1-й уровень декомпозиции при добавлении новой строки
-            Marks(); //обновляем график марок
+            //Marks(); //обновляем график марок
 
             if (comboBox2.Items.Count != 0)    //если блоки определены на 2 уровне
             {
@@ -605,6 +605,29 @@ namespace Kurs1
         }
 
         //Функция рисующая график по двум столбцам таблицы
+        //private void ChartMain(Chart chart, DataTable dataTable, int col1, int col2, string name)
+        //{
+        //    Series serie = new Series(name);
+        //    for (int i = 0; i < dataTable.Rows.Count; i++)
+        //    {
+        //        if (dataTable.Rows[i][col1] != DBNull.Value && dataTable.Rows[i][col2] != DBNull.Value)
+        //        {
+        //            if (dataTable.Rows[i][col1].ToString() != "Прогноз")
+        //            {
+        //                serie.Points.AddXY(Convert.ToDouble(dataTable.Rows[i][col1]), Convert.ToDouble(dataTable.Rows[i][col2]));
+        //            }
+        //            else
+        //            {
+        //                serie.Points.AddXY(i, Convert.ToDouble(dataTable.Rows[i][col2]));
+        //            }
+        //            serie.Points[i].Label = $"{i}";
+        //        }
+        //        else break;
+        //    }
+
+        //    chart.Series.Add(serie);
+        //}
+
         private void ChartMain(Chart chart, DataTable dataTable, int col1, int col2, string name)
         {
             Series serie = new Series(name);
@@ -620,13 +643,14 @@ namespace Kurs1
                     {
                         serie.Points.AddXY(i, Convert.ToDouble(dataTable.Rows[i][col2]));
                     }
-                    serie.Points[i].Label = $"{i}";
+                    serie.Points[i].Label = dataTable.Rows[i][0].ToString(); // Изменение наименования точки на значение из dataTable.Rows[i][0]
                 }
                 else break;
             }
 
             chart.Series.Add(serie);
         }
+
 
         //Полная декомпозиция по таблице. С выведением в таблицы, графиком и списком
         private void Decommposition(DataGridView DataGrid, Chart chart, DataTable dataTable, CheckedListBox chBox1, CheckedListBox chBox2, CheckedListBox chBox3)
@@ -817,11 +841,15 @@ namespace Kurs1
                 dataGridView4.Rows.Clear();
                 dataGridView4.Columns.Clear();
 
+                comboBox5.Items.Clear();
+
                 for (int i = 0; i < this.blocks.Columns.Count; i++)
                 {
                     comboBox2.Items.Add((char)(i + 1040));  //Вывод букв кириллицы с помощью юникода в список блоков на вкладке "Блок"
                     comboBox3.Items.Add((char)(i + 1040));  //Вывод букв кириллицы с помощью юникода в список блоков на вкладке "Подблок"
+                    comboBox5.Items.Add((char)(i + 1040));
                 }
+                comboBox5.Items.Add("Все марки");
 
 
                 label5.Text = "";
@@ -912,6 +940,47 @@ namespace Kurs1
             }
         }
 
+        private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Marks();
+
+            //DataTable block = new DataTable();
+
+            //for (int i = 0; i < Data.Rows.Count; i++) //добавляем строки
+            //{
+            //    block.Rows.Add();
+            //}
+            //block.Columns.Add("Эпоха");
+            //for (int i = 0; i < blocks.Rows.Count; i++) //добавляем столбцы
+            //{
+            //    block.Columns.Add(Convert.ToString(blocks.Rows[i][comboBox5.SelectedIndex]));
+            //}
+
+            //for (int i = 0; i < block.Rows.Count; i++) //заполняем таблицу
+            //    for (int j = 0; j < block.Columns.Count; j++)
+            //    {
+            //        if (j == 0) block.Rows[i][j] = i;
+            //        else block.Rows[i][j] = Data.Rows[i][Convert.ToInt32(blocks.Rows[j - 1][comboBox2.SelectedIndex])];
+            //    }
+            //OutPutTable(block, dataGridView4); //вывод таблицы
+            //Decommposition(dataGridView3, chartPage3, block, checkedListBox2, checkedListBox6, checkedListBox9); // проводим декомпозицию
+
+            //for (int i = 0; i < dataGridView3.RowCount; i++) //Проверяем есть ли нестабильные эпохи и выводим сообщение для пользователя
+            //{
+            //    if (dataGridView3.Rows[i].Cells[dataGridView3.ColumnCount - 1].Value.ToString() == "-")
+            //    {
+            //        label5.Text = "Блок нестабилен, требуется декомпозиция.";
+            //        label5.ForeColor = Color.Red;
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        label5.Text = "Блок стабилен, декомпозиция не требуется.";
+            //        label5.ForeColor = Color.Green;
+            //    }
+            //}
+        }
+
         //Кнопка "Все графики". Создает новое окно, в котором демонстрируются графики всех блоков
         Graphics open_graphs = new Graphics();
         private void button7_Click(object sender, EventArgs e)
@@ -951,6 +1020,8 @@ namespace Kurs1
                     ChartMain(open_graphs.my_chart, TableData(block), 0, 1, $"M(t) подблок {comboBox2.Items[index]}");
                     ChartMain(open_graphs.my_chart, TableData(block), 0, 5, $"M+(t) подблок {comboBox2.Items[index]}");
                     ChartMain(open_graphs.my_chart, TableData(block), 0, 7, $"M-(t) подблок {comboBox2.Items[index]}");
+
+                    //!!!
                 }
 
                 //добавляем серии в список
@@ -967,32 +1038,77 @@ namespace Kurs1
         }
 
         //Функция, создающая график высот марок по одной
-        private void Marks() //!!
+        //private void Marks() //!!
+        //{
+        //    checkedListBox3.Items.Clear();  //очищаем график
+        //    chart3.ChartAreas[0].AxisX.Title = "Эпоха";        //настройки поля графиков
+        //    chart3.ChartAreas[0].AxisY.Title = "Высота";
+        //    chart3.ChartAreas[0].AxisY.IsStartedFromZero = false;
+        //    chart3.ChartAreas[0].AxisX.IsStartedFromZero = true;
+
+        //    chartPage5 = new Chart();
+
+        //    for (int i = 1; i < Data.Columns.Count; i++)       //для каждой марки создаем серию
+        //    {
+        //        Series serie = new Series($"Марка {i}");
+        //        for (int j = 0; j < Data.Rows.Count; j++)      //добавляем точки графика
+        //        {
+        //            serie.Points.AddXY($"{j}", Convert.ToDouble(Data.Rows[j][i]));
+        //            serie.Points[j].Label = $"{j}";
+        //        }
+
+        //        chartPage5.Series.Add(serie);
+        //        checkedListBox3.Items.Add(serie.Name);
+        //    }
+
+        //    checkedListBox3.SelectedIndex = 0;
+        //    checkedListBox3.SelectedIndex = -1;
+        //}
+
+        private void Marks()
         {
-            checkedListBox3.Items.Clear();  //очищаем график
-            chart3.ChartAreas[0].AxisX.Title = "Эпоха";        //настройки поля графиков
+            checkedListBox3.Items.Clear();
+            chart3.ChartAreas[0].AxisX.Title = "Эпоха";
             chart3.ChartAreas[0].AxisY.Title = "Высота";
             chart3.ChartAreas[0].AxisY.IsStartedFromZero = false;
             chart3.ChartAreas[0].AxisX.IsStartedFromZero = true;
 
             chartPage5 = new Chart();
 
-            for (int i = 1; i < Data.Columns.Count; i++)       //для каждой марки создаем серию
-            {
-                Series serie = new Series($"Марка {i}");
-                for (int j = 0; j < Data.Rows.Count; j++)      //добавляем точки графика
-                {
-                    serie.Points.AddXY($"{j}", Convert.ToDouble(Data.Rows[j][i]));
-                    serie.Points[j].Label = $"{j}";
-                }
+            bool showAllMarks = comboBox5.SelectedItem.ToString() == "Все марки"; // Проверяем выбранный элемент в comboBox
 
-                chartPage5.Series.Add(serie);
-                checkedListBox3.Items.Add(serie.Name);
+            int blockCount = comboBox5.Items.Count - 1; // Количество блоков в ComboBox, исключая "Все марки"
+
+            int marksPerBlock = (Data.Columns.Count - 1) / blockCount; // Количество марок на каждый блок
+
+            for (int blockIndex = 0; blockIndex < blockCount; blockIndex++)
+            {
+                int startIndex = blockIndex * marksPerBlock;
+                int endIndex = startIndex + marksPerBlock - 1;
+
+                if (showAllMarks || comboBox5.SelectedItem.ToString() == comboBox5.Items[blockIndex].ToString())
+                {
+                    for (int i = startIndex; i <= endIndex; i++)
+                    {
+                        Series serie = new Series($"Марка {i + 1}");
+                        for (int j = 0; j < Data.Rows.Count; j++)
+                        {
+                            serie.Points.AddXY($"{j}", Convert.ToDouble(Data.Rows[j][i + 1]));
+                            serie.Points[j].Label = $"{j}";
+                        }
+
+                        chartPage5.Series.Add(serie);
+                        checkedListBox3.Items.Add(serie.Name);
+                    }
+                }
             }
 
             checkedListBox3.SelectedIndex = 0;
             checkedListBox3.SelectedIndex = -1;
         }
+
+
+
 
         //Кнопка "выбрать все"
         private void button8_Click(object sender, EventArgs e)
@@ -1023,7 +1139,7 @@ namespace Kurs1
             TableBD(); //заполняем таблицу данными
             OutPutTable(Data, dataGridView1);                          //выводим в таблицу
             Decommposition(dataGridView2, chartPage2, Data, checkedListBox1, checkedListBox5, checkedListBox8);   //Проводим 1-й уровень декомпозиции 
-            Marks();                                                 //обновляем график марок
+            /*Marks();                                             *///обновляем график марок
 
             comboBox2.Items.Clear(); //очищаем второй уровень декомпозиции
 
