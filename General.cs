@@ -689,7 +689,7 @@ namespace Kurs1
                     chBox2.Items.Add(serie.Name);
                     countSerie++;
                 }
-                else
+                else if (countSerie < 11)
                 {
                     chBox3.Items.Add(serie.Name);
                 }
@@ -749,45 +749,64 @@ namespace Kurs1
                 case "checkedListBox1":
                     chart = chart1;
                     donorChart = chartPage2;
+                    chart1.ChartAreas[0].AxisX.Title = "M";
+                    chart1.ChartAreas[0].AxisY.Title = "A";
                     break;
-
                 case "checkedListBox2":
                     chart = chart2;
                     donorChart = chartPage3;
+                    chart2.ChartAreas[0].AxisX.Title = "M";
+                    chart2.ChartAreas[0].AxisY.Title = "A";
                     break;
 
                 case "checkedListBox3":
                     chart = chart3;
                     donorChart = chartPage5;
+                    chart3.ChartAreas[0].AxisX.Title = "M";
+                    chart3.ChartAreas[0].AxisY.Title = "A";
                     break;
 
                 case "checkedListBox4":
                     chart = chart4;
                     donorChart = chartPage4;
+                    chart4.ChartAreas[0].AxisX.Title = "M";
+                    chart4.ChartAreas[0].AxisY.Title = "A";
                     break;
                 case "checkedListBox5":
                     chart = chart1;
                     donorChart = chartPage2;
+                    chart1.ChartAreas[0].AxisX.Title = "M";
+                    chart1.ChartAreas[0].AxisY.Title = "A";
                     break;
                 case "checkedListBox6":
                     chart = chart2;
                     donorChart = chartPage3;
+                    chart2.ChartAreas[0].AxisX.Title = "M";
+                    chart2.ChartAreas[0].AxisY.Title = "A";
                     break;
                 case "checkedListBox7":
                     chart = chart4;
                     donorChart = chartPage4;
+                    chart4.ChartAreas[0].AxisX.Title = "M";
+                    chart4.ChartAreas[0].AxisY.Title = "A";
                     break;
                 case "checkedListBox8":
                     chart = chart1;
                     donorChart = chartPage2;
+                    chart1.ChartAreas[0].AxisX.Title = "T";
+                    chart1.ChartAreas[0].AxisY.Title = "A";
                     break;
                 case "checkedListBox9":
                     chart = chart2;
                     donorChart = chartPage3;
+                    chart2.ChartAreas[0].AxisX.Title = "T";
+                    chart2.ChartAreas[0].AxisY.Title = "A";
                     break;
                 case "checkedListBox10":
-                    chart = chart3;
-                    donorChart = chartPage5;
+                    chart = chart4;
+                    donorChart = chartPage4;
+                    chart4.ChartAreas[0].AxisX.Title = "T";
+                    chart4.ChartAreas[0].AxisY.Title = "A";
                     break;
 
                     //!!
@@ -1377,7 +1396,7 @@ namespace Kurs1
 
                 // Импортируем данные из DataTable в существующую таблицу
                 existingTable.Merge(Data);
-
+                // !!
                 // Обновляем базу данных
                 adapter.Update(existingTable);
 
