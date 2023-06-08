@@ -91,11 +91,10 @@ namespace Kurs1
                 A = Convert.ToDouble( aValue );
                 E = Convert.ToDouble( eValue );
 
-                textBox1.Text = aValue;
-                textBox2.Text = eValue;
+                textBox1.Text = eValue;
+                textBox2.Text = aValue;
                 toolStripStatusLabel2.Text = "Точность E = " + E;
                 toolStripStatusLabel3.Text = "Коэффициент эксп. сглаживания А = " + A;
-
 
                 // Если нашёл картинку
                 SQLiteDataReader reader = imgSQL.ExecuteReader();
@@ -111,8 +110,6 @@ namespace Kurs1
                     }
                 }
                 reader.Close();
-
-
 
                 return true;
             }
@@ -426,9 +423,13 @@ namespace Kurs1
                     Ai = Ai + Convert.ToDouble(dataTable.Rows[0][j]) * Convert.ToDouble(dataTable.Rows[i][j]); //вычисляем числитель
                 }
                 Ai = Ai / (Mi * M0);                              //в скобках
-                if (Ai > 1) Ai = 1;
-
-                Ai = Math.Round(Math.Acos(Ai), 6) * 206264.816;           //вычисляем значение Ai в радианах и переводим в секунды
+                if (Ai > 1 && Ai < 1.1)
+                {
+                    Ai = Math.Floor(A);
+                }
+                Ai = Math.Acos(Ai) * (180 / Math.PI);
+                Ai = Math.Round(Ai, 7);
+                //Ai = Math.Round(Math.Acos(Ai), 6) * 206264.816; //вычисляем значение Ai в радианах и переводим в секунды
                 Mi = Math.Round(Mi, 4);                       //округляем
                 dekomp1.Rows[i][1] = Mi;               //вписываем в таблицу M и A
                 dekomp1.Rows[i][2] = Ai;
@@ -445,14 +446,14 @@ namespace Kurs1
             double Mpr = A * M0 + (1 - A) * (sumMi / dekomp1.Rows.Count);     //вычисляем Mpr нулевое
             double Apr = A * Convert.ToDouble(dekomp1.Rows[0][2]) + (1 - A) * (sumA / dekomp1.Rows.Count); //вычисляем Apr нулевое
             dekomp1.Rows[0][3] = Math.Round(Mpr, 4);
-            dekomp1.Rows[0][4] = Math.Round(Apr, 4);
+            dekomp1.Rows[0][4] = Math.Round(Apr, 7);
 
             for (int i = 1; i < dekomp1.Rows.Count; i++)
             {
                 Mpr = A * Convert.ToDouble(dekomp1.Rows[i][1]) + (1 - A) * Mpr;
                 dekomp1.Rows[i][3] = Math.Round(Mpr, 4);
                 Apr = A * Convert.ToDouble(dekomp1.Rows[i][2]) + (1 - A) * Apr;
-                dekomp1.Rows[i][4] = Math.Round(Apr, 4);
+                dekomp1.Rows[i][4] = Math.Round(Apr, 7);
             }
 
             dekomp1.Rows.Add();  //добавляем прогнозируемую эпоху
@@ -470,7 +471,8 @@ namespace Kurs1
                 double MiVerh = 0; //вводим переменную для Mi
                 for (int j = 1; j < dataTable.Columns.Count; j++)                      //цикл по точкам
                 {
-                    MiVerh += Math.Pow(Convert.ToDouble(dataTable.Rows[i][j]) + E, 2);  //вычисляем сумму квадратов высот
+                   //MiVerh += (Convert.ToDouble(dataTable.Rows[i][j]) + E) * (Convert.ToDouble(dataTable.Rows[i][j]) + E);
+                   MiVerh += Math.Pow(Convert.ToDouble(dataTable.Rows[i][j]) + E, 2);  //вычисляем сумму квадратов высот
                 }
                 MiVerh = Math.Sqrt(MiVerh);                                           //берем кв.корень
                 if (i == 0) M0Verh = MiVerh;                                          //запоминаем M0
@@ -480,13 +482,14 @@ namespace Kurs1
                 {
                     AiVerh += (Convert.ToDouble(dataTable.Rows[0][j]) + E) * (Convert.ToDouble(dataTable.Rows[i][j]) + E);    //вычисляем числитель
                 }
-                AiVerh /= MiVerh * M0Verh;                                             //в скобках
+                AiVerh = AiVerh / (MiVerh * M0Verh);                                             //в скобках
                 if (AiVerh > 0.99999999999) AiVerh = 1;
-                AiVerh = Math.Acos(AiVerh);                                           //значение Ai в радианах
-                AiVerh = AiVerh * 206264.816;                                         //значение Ai в секундах
+                AiVerh = Math.Acos(AiVerh) * (180 / Math.PI);
+                //AiVerh = Math.Acos(AiVerh);                                           //значение Ai в радианах
+                //AiVerh = AiVerh * 206264.816;                                         //значение Ai в секундах
 
                 MiVerh = Math.Round(MiVerh, 6);                                       //округляем
-                AiVerh = Math.Round(AiVerh, 4);
+                AiVerh = Math.Round(AiVerh, 7);
                 dekomp1.Rows[i][5] = MiVerh;                                        //вписываем в таблицу M и A
                 dekomp1.Rows[i][6] = AiVerh;
 
@@ -516,14 +519,15 @@ namespace Kurs1
                 {
                     AiNiz += (Convert.ToDouble(dataTable.Rows[0][j]) - E) * (Convert.ToDouble(dataTable.Rows[i][j]) - E);    //вычисляем числитель
                 }
-                AiNiz /= MiNiz * M0Niz;                                             //в скобках
+                AiNiz = AiNiz / (MiNiz * M0Niz);                                             //в скобках
                 if (AiNiz > 0.99999999999) AiNiz = 1;
-                AiNiz = Math.Acos(AiNiz);                                           //значение Ai в радианах
-                AiNiz = AiNiz * 206264.816;                                         //значение Ai в секундах
+                //AiNiz = Math.Acos(AiNiz);                                           //значение Ai в радианах
+                //AiNiz = AiNiz * 206264.816;                                         //значение Ai в секундах
+                AiNiz = Math.Acos(AiNiz) * (180 / Math.PI);
 
 
                 MiNiz = Math.Round(MiNiz, 4);                                       //округляем
-                AiNiz = Math.Round(AiNiz, 4);
+                AiNiz = Math.Round(AiNiz, 7);
                 dekomp1.Rows[i][7] = MiNiz;                                        //вписываем в таблицу M и A
                 dekomp1.Rows[i][8] = AiNiz;
 
@@ -548,14 +552,14 @@ namespace Kurs1
             double PlusMpr = A * M0 + (1 - A) * (SumPlusM / dekomp1.Rows.Count);     //вычисляем Mpr нулевое
             double PlusApr = A * Convert.ToDouble(dekomp1.Rows[0][6]) + (1 - A) * (SumPlusA / dekomp1.Rows.Count); //вычисляем Apr нулевое
             dekomp1.Rows[0][9] = Math.Round(PlusMpr, 6);
-            dekomp1.Rows[0][11] = Math.Round(PlusApr, 6);
+            dekomp1.Rows[0][11] = Math.Round(PlusApr, 7);
 
             for (int i = 1; i < dekomp1.Rows.Count; i++)
             {
                 PlusMpr = A * Convert.ToDouble(dekomp1.Rows[i][5]) + (1 - A) * PlusMpr;
                 dekomp1.Rows[i][9] = Math.Round(PlusMpr, 6);
                 PlusApr = A * Convert.ToDouble(dekomp1.Rows[i][6]) + (1 - A) * PlusApr;
-                dekomp1.Rows[i][11] = Math.Round(PlusApr, 6);
+                dekomp1.Rows[i][11] = Math.Round(PlusApr, 7);
             }
 
             //dekomp1.Rows[dekomp1.Rows.Count - 1][9] = A * SumPlusM / (dekomp1.Rows.Count - 1) + (1 - A) * Convert.ToDouble(dekomp1.Rows[dekomp1.Rows.Count - 2][9]);
@@ -572,14 +576,14 @@ namespace Kurs1
             double MinusMpr = A * M0 + (1 - A) * (SumMinusM / dekomp1.Rows.Count);     //вычисляем Mpr нулевое
             double MinusApr = A * Convert.ToDouble(dekomp1.Rows[0][8]) + (1 - A) * (SumMinusA / dekomp1.Rows.Count); //вычисляем Apr нулевое
             dekomp1.Rows[0][10] = Math.Round(MinusMpr, 6);
-            dekomp1.Rows[0][12] = Math.Round(MinusApr, 6);
+            dekomp1.Rows[0][12] = Math.Round(MinusApr, 7);
 
             for (int i = 1; i < dekomp1.Rows.Count; i++)
             {
                 MinusMpr = A * Convert.ToDouble(dekomp1.Rows[i][7]) + (1 - A) * MinusMpr;
-                dekomp1.Rows[i][10] = Math.Round(MinusMpr, 6);
+                dekomp1.Rows[i][10] = Math.Round(MinusMpr, 7);
                 MinusApr = A * Convert.ToDouble(dekomp1.Rows[i][8]) + (1 - A) * MinusApr;
-                dekomp1.Rows[i][12] = Math.Round(MinusApr, 6);
+                dekomp1.Rows[i][12] = Math.Round(MinusApr, 7);
             }
 
             //dekomp1.Rows[dekomp1.Rows.Count - 1][10] = A * SumMinusM / (dekomp1.Rows.Count - 1) + (1 - A) * Convert.ToDouble(dekomp1.Rows[dekomp1.Rows.Count - 2][10]);
@@ -588,17 +592,17 @@ namespace Kurs1
             //определение устойчивости по эпохам
             for (int i = 0; i < dataTable.Rows.Count; i++)
             {
-                double left = Math.Abs(Convert.ToDouble(dekomp1.Rows[i][5]) - Convert.ToDouble(dekomp1.Rows[i][7]));
+                double left = Math.Abs(Convert.ToDouble(dekomp1.Rows[i][5]) - Convert.ToDouble(dekomp1.Rows[i][7])) / 2; // 1.6;
                 double right = Math.Abs(Convert.ToDouble(dekomp1.Rows[i][1]) - Convert.ToDouble(dekomp1.Rows[0][1]));
 
-                if (left >= right) dekomp1.Rows[i][13] = "+";
+                if (left > right) dekomp1.Rows[i][13] = "+";
                 else dekomp1.Rows[i][13] = "-";
             }
 
-            double PrLeft = Math.Abs(Convert.ToDouble(dekomp1.Rows[(dataTable.Rows.Count - 1)][5]) - Convert.ToDouble(dekomp1.Rows[(dataTable.Rows.Count - 1)][7]));
+            double PrLeft = Math.Abs(Convert.ToDouble(dekomp1.Rows[(dataTable.Rows.Count - 1)][5]) - Convert.ToDouble(dekomp1.Rows[(dataTable.Rows.Count - 1)][7])) / 2;
             double PrRight = Math.Abs(Convert.ToDouble(dekomp1.Rows[(dataTable.Rows.Count - 1)][2]) - Convert.ToDouble(dekomp1.Rows[0][2]));
 
-            if (PrLeft >= PrRight) dekomp1.Rows[(dekomp1.Rows.Count - 1)][13] = "+";
+            if (PrLeft > PrRight) dekomp1.Rows[(dekomp1.Rows.Count - 1)][13] = "+";
             else dekomp1.Rows[(dekomp1.Rows.Count - 1)][13] = "-";
 
             return dekomp1;
@@ -762,8 +766,6 @@ namespace Kurs1
                 case "checkedListBox3":
                     chart = chart3;
                     donorChart = chartPage5;
-                    chart3.ChartAreas[0].AxisX.Title = "M";
-                    chart3.ChartAreas[0].AxisY.Title = "A";
                     break;
 
                 case "checkedListBox4":
